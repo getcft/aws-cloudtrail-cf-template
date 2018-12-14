@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudTrail Template
+
+Resources:
+    # Create KMS CloudTrail encryption key
+    cloudtrailKey:
+      Type: AWS::KMS::Key
+      Properties:
+        KeyPolicy:
+          Version: 2012-10-17
+          Id: key-cloudtrail
+          Statement:
+            - Sid: Enable IAM User Permissions
+              Effect: Allow
+              Principal:
+                AWS: !Join
+                  - ''
+                  - - 'arn:aws:iam::'
+                    - !Ref 'AWS::AccountId'
+                    - ':root'
+              Action: 'kms:*'
+              Resource: '*'
+            - Sid: Allow CloudTrail to encrypt logs
+              Effect: Allow
+              Principal:
+                Service:
+                  - cloudtrail.amazonaws.com
+              Action: 'kms:GenerateDataKey*'
+              Resource: '*'
+              Condition:
+                StringLike:
+                  'kms:EncryptionContext:aws:cloudtrail:arn': !Sub 'arn:aws:cloudtrail:*:${AWS::AccountId}:trail/*'
+            - Sid: Allow CloudTrail to describe key
+              Effect: Allow
+              Principal:
+                Service:
+                  - cloudtrail.amazonaws.com
+              Action: 'kms:DescribeKey'
+              Resource: '*'
+            - Sid: Allow principals in the account to decrypt log files
+              Effect: Allow
+              Principal:
+                AWS: '*'
+              Action:
+                - 'kms:Decrypt'
+                - 'kms:ReEncryptFrom'
+              Resource: '*'
+              Condition:
+                StringEquals:
+                  'kms:CallerAccount': !Sub '${AWS::AccountId}'
+                StringLike:
+                  'kms:EncryptionContext:aws:cloudtrail:arn': !Sub 'arn:aws:cloudtrail:*:${AWS::AccountId}:trail/*'
+            - Sid: Allow alias creation during setup
+              Effect: Allow
+              Principal:
+                AWS: '*'
+              Action: 'kms:CreateAlias'
+              Resource: '*'
+              Condition:
+                StringEquals:
+                  'kms:ViaService': ec2.region.amazonaws.com
+                  'kms:CallerAccount': !Sub '${AWS::AccountId}'
+            - Sid: Enable cross account log decryption
+              Effect: Allow
+              Principal:
+                AWS: '*'
+              Action:
+                - 'kms:Decrypt'
+                - 'kms:ReEncryptFrom'
+              Resource: '*'
+              Condition:
+                StringEquals:
+                  'kms:CallerAccount': !Sub '${AWS::AccountId}'
+                StringLike:
+                  'kms:EncryptionContext:aws:cloudtrail:arn': !Sub 'arn:aws:cloudtrail:*:${AWS::AccountId}:trail/*'
+
+    cloudtrailKeyAlias:
+      Type: AWS::KMS::Alias
+      Properties:
+        AliasName: alias/cloudtrail
+        TargetKeyId:
+          Ref: cloudtrailKey
+
+    # Create KMS CloudTrail S3 bucket encryption key
+    s3cloudtrailKey:
+      Type: AWS::KMS::Key
+      Properties:
+        KeyPolicy:
+          Version: 2012-10-17
+          Id: key-cloudtrails3
+          Statement:
+            - Sid: Enable IAM User Permissions
+              Effect: Allow
+              Principal:
+                AWS: !Join
+                  - ''
+                  - - 'arn:aws:iam::'
+                    - !Ref 'AWS::AccountId'
+                    - ':root'
+              Action: 'kms:*'
+              Resource: '*'
+            - Sid: Allow VPC Flow Logs to use the key
+              Effect: Allow
+              Principal:
+                Service:
+                  - delivery.logs.amazonaws.com
+              Action: 'kms:GenerateDataKey*'
+              Resource: '*'
+
+    s3cloudtrailKeyAlias:
+      Type: AWS::KMS::Alias
+      Properties:
+        AliasName: alias/cloudtrails3
+        TargetKeyId:
+          Ref: s3cloudtrailKey
+
+    # Create CloudTrail encrypted S3 bucket for storage
+    CloudTrailS3Bucket:
+      DependsOn:
+          - s3cloudtrailKey
+          - s3cloudtrailKeyAlias
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              KMSMasterKeyID: !Sub 'arn:aws:kms:${AWS::Region}:${AWS::AccountId}:${s3cloudtrailKeyAlias}'
+              SSEAlgorithm: 'aws:kms'
+
+    CloudTrailBucketPolicy:
+      DependsOn:
+          - CloudTrailS3Bucket
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref CloudTrailS3Bucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Sid: "AWSCloudTrailAclCheck"
+              Effect: Allow
+              Principal:
+                Service: 'cloudtrail.amazonaws.com'
+              Action: "s3:GetBucketAcl"
+              Resource: !Sub arn:aws:s3:::${CloudTrailS3Bucket}
+            - Sid: "AWSCloudTrailWrite"
+              Effect: Allow
+              Principal:
+                Service: 'cloudtrail.amazonaws.com'
+              Action: "s3:PutObject"
+              Resource: !Sub arn:aws:s3:::${CloudTrailS3Bucket}/AWSLogs/${AWS::AccountId}/*
+              Condition:
+                StringEquals:
+                  's3:x-amz-acl': 'bucket-owner-full-control'
+
+    # Enable CloudTrail
+    MyCloudTrail:
+      DependsOn:
+        - CloudTrailS3Bucket
+        - CloudTrailBucketPolicy
+        - cloudtrailKey
+      Type: AWS::CloudTrail::Trail
+      Properties:
+        S3BucketName: !Ref CloudTrailS3Bucket
+        IsLogging: true
+        KMSKeyId: !GetAtt cloudtrailKey.Arn
+
+Outputs:
+    CloudTrailKMSKeyAlias:
+        Description: 'CloudTrail KMS Key Alias'
+        Value:
+            Ref: 'cloudtrailKeyAlias'
+    S3KMSKeyAlias:
+        Description: 'S3 KMS Key Alias'
+        Value:
+            Ref: 's3cloudtrailKeyAlias'
+    CloudTrailS3Bucket:
+        Description: 'Encrypted S3 Bucket for CloudTrail Logs'
+        Value:
+            Ref: 'CloudTrailS3Bucket'
+    CloudTrailS3BucketPolicy:
+        Description: 'S3 Bucket Policy for CloudTrail Logs'
+        Value:
+            Ref: 'CloudTrailBucketPolicy'
+    CloudTrail:
+        Description: 'CloudTrail'
+        Value:
+            Ref: 'MyCloudTrail'
