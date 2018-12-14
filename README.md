@@ -10,3 +10,15 @@ The AWS CloudFormation template creates [KMS](https://aws.amazon.com/kms/) encry
 
 * AWS account and environment configured with AWS Credentials
 * IAM user with AWSCloudTrailFullAccess, AWSKeyManagementServicePowerUser, AWSCloudFormationReadOnlyAccess, AmazonS3FullAccess
+
+## See how it works:
+
+AWS Management Console
+
+* Login to AWS Management Console
+* Launch in CloudFormation cloudtrail.yml (from the repo you cloned)
+
+CloudFormation Fields
+
+* Stack name (Enter a name to associate to your AWS CloudTrail) then **Next**
+* Continue choosing **Next** and then **Create**
