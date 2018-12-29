@@ -1,4 +1,4 @@
-# aws-cloudtrail-cfn-template
+# aws-cloudtrail-cf-template
 
 ## Description:
 
@@ -22,7 +22,7 @@ _***note AWS S3, KMS and CloudTrail will incur costs**_
 AWS Management Console
 
 * Login to AWS Management Console
-* Launch in CloudFormation cloudtrail.yml (from the repo you cloned)
+* Launch in CloudFormation cloudtrail-cf-template.yml (from the repo you cloned)
 
 CloudFormation Fields
 
