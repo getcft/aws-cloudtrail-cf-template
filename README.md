@@ -1,4 +1,5 @@
 # aws-cloudtrail-cf-template
+[![Build Status](https://travis-ci.org/getcft/aws-cloudtrail-cf-template.svg?branch=master)](https://travis-ci.org/getcft/aws-cloudtrail-cf-template)
 
 ## Description:
 
