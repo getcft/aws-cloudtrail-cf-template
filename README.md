@@ -3,7 +3,7 @@
 
 ## Description:
 
-This <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> solution deploys <a href="https://aws.amazon.com/cloudtrail/" target="_blank">AWS CloudTrail</a>, a service for governance, compliance, operational auditing, and risk auditing of your AWS account. This AWS CloudFormation template creates <a href="https://aws.amazon.com/kms/" target="_blank">AWS KMS</a> encryption keys for CloudTrail and <a href="https://aws.amazon.com/s3/" target="_blank">S3</a>, and enables CloudTrail for the account. CloudTrail logs are encrypted and stored in an encrypted S3 bucket that the CloudFormation template creates.
+This <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> solution deploys <a href="https://aws.amazon.com/cloudtrail/" target="_blank">AWS CloudTrail</a>, a service for governance, compliance, operational auditing, and risk auditing of your AWS account. This AWS CloudFormation template creates <a href="https://aws.amazon.com/kms/" target="_blank">AWS KMS</a> encryption keys for CloudTrail and <a href="https://aws.amazon.com/s3/" target="_blank">S3</a>, and enables CloudTrail for the account. CloudTrail logs are encrypted (AES-256) and stored in an encrypted (AES-256) S3 bucket that the CloudFormation template creates.
 
 Using AWS CloudTrail, you can log, continuously monitor, and retain account activity related to actions across your AWS infrastructure. CloudTrail provides event history of your AWS account activity, including actions taken through the AWS Management Console, AWS SDKs, command line tools, and other AWS services. This event history simplifies security analysis, resource change tracking, and troubleshooting.
 
