@@ -27,11 +27,6 @@ As with most AWS services you will incur costs for usage. For this CloudFormatio
    * AWSKeyManagementServicePowerUser
    * AmazonS3FullAccess
 
-## CloudFormation Template
-
-* The CloudFormation Template is available on GitHub:
-   * <a href="https://github.com/getcft/aws-cloudtrail-cf-template" target="_blank">aws-cloudtrail-cf-template</a>
-
 ## Deploy the CloudFormation Template
 
 * AWS Management Console
