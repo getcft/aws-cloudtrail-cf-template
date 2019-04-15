@@ -7,6 +7,10 @@ This <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudF
 
 CloudTrail logs are encrypted (AES-256) and stored in an encrypted (AES-256) S3 bucket that the CloudFormation template creates. For security and compliance it is important all AWS account activity is tracked and stored for tracking and analysis.
 
+<img src="cloudtrail.png" alt="CloudTrail" />
+
+AWS CloudFormation provides a common language for you to describe and provision all the infrastructure resources in your cloud environment.
+
 Using AWS CloudTrail, you can log, continuously monitor, and retain account activity related to actions across your AWS infrastructure. CloudTrail provides event history of your AWS account activity, including actions taken through the AWS Management Console, AWS SDKs, command line tools, and other AWS services. This event history simplifies security analysis, resource change tracking, and troubleshooting.
 
 ## AWS Resource Costs
@@ -26,6 +30,11 @@ As with most AWS services you will incur costs for usage. For this CloudFormatio
    * AWSCloudTrailFullAccess
    * AWSKeyManagementServicePowerUser
    * AmazonS3FullAccess
+
+## CloudFormation Template
+
+* The CloudFormation Template is available on GitHub:
+   * <a href="https://github.com/getcft/aws-cloudtrail-cf-template" target="_blank">aws-cloudtrail-cf-template</a>
 
 ## Deploy the CloudFormation Template
 
@@ -49,4 +58,3 @@ In the *AWS Management Console* you should be able to *verify* the following hav
    * An Encrypted S3 Bucket
    * A CloudTrail S3 Bucket Policy
    * CloudTrail enabled for the specific region with encrypted logs
-
