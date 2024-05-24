@@ -1,5 +1,4 @@
 # aws-cloudtrail-cf-template
-[![Build Status](https://travis-ci.org/getcft/aws-cloudtrail-cf-template.svg?branch=master)](https://travis-ci.org/getcft/aws-cloudtrail-cf-template)
 [![CloudFormation Validation](https://github.com/getcft/aws-cloudtrail-cf-template/actions/workflows/cloudformation-validation.yml/badge.svg)](https://github.com/getcft/aws-cloudtrail-cf-template/actions/workflows/cloudformation-validation.yml)
 
 ## Description:
