@@ -1,4 +1,4 @@
-# Copyright [2018] [Phil Chen]
+# Copyright [2024] [Phil Chen]
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -136,6 +136,7 @@ Resources:
           - s3cloudtrailKeyAlias
       Type: AWS::S3::Bucket
       DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
       Properties:
         BucketEncryption:
           ServerSideEncryptionConfiguration:
@@ -144,8 +145,6 @@ Resources:
               SSEAlgorithm: 'aws:kms'
 
     CloudTrailBucketPolicy:
-      DependsOn:
-          - CloudTrailS3Bucket
       Type: AWS::S3::BucketPolicy
       Properties:
         Bucket: !Ref CloudTrailS3Bucket
@@ -170,10 +169,6 @@ Resources:
 
     # Enable CloudTrail
     MyCloudTrail:
-      DependsOn:
-        - CloudTrailS3Bucket
-        - CloudTrailBucketPolicy
-        - cloudtrailKey
       Type: AWS::CloudTrail::Trail
       Properties:
         S3BucketName: !Ref CloudTrailS3Bucket
