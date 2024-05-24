@@ -169,8 +169,6 @@ Resources:
 
     # Enable CloudTrail
     MyCloudTrail:
-      DependsOn:
-        - CloudTrailS3Bucket
       Type: AWS::CloudTrail::Trail
       Properties:
         S3BucketName: !Ref CloudTrailS3Bucket
