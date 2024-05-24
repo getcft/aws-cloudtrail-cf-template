@@ -136,6 +136,7 @@ Resources:
           - s3cloudtrailKeyAlias
       Type: AWS::S3::Bucket
       DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
       Properties:
         BucketEncryption:
           ServerSideEncryptionConfiguration:
@@ -144,8 +145,6 @@ Resources:
               SSEAlgorithm: 'aws:kms'
 
     CloudTrailBucketPolicy:
-      DependsOn:
-          - CloudTrailS3Bucket
       Type: AWS::S3::BucketPolicy
       Properties:
         Bucket: !Ref CloudTrailS3Bucket
@@ -172,8 +171,6 @@ Resources:
     MyCloudTrail:
       DependsOn:
         - CloudTrailS3Bucket
-        - CloudTrailBucketPolicy
-        - cloudtrailKey
       Type: AWS::CloudTrail::Trail
       Properties:
         S3BucketName: !Ref CloudTrailS3Bucket
